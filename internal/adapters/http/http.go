@@ -3,10 +3,10 @@ package http
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/szinn/go-hello/internal/core"
@@ -23,20 +23,25 @@ type requestIdKey struct{}
 type loggerKey struct{}
 type coreServicesKey struct{}
 
-func CreateServer(port int, core *core.CoreServices) *Server {
+func CreateServer(port string, core *core.CoreServices) *Server {
+	slog.Debug("Creating HTTP server...")
 	mux := http.NewServeMux()
 	addHandlers(mux)
 
 	server := &http.Server{
-		Addr:    ":" + strconv.Itoa(port),
+		Addr:    ":" + port,
 		Handler: handlerWrapper(mux, core),
 	}
+
 	go func() {
+		slog.Info(fmt.Sprintf("Listening on :%s", port))
 		if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("HTTP server error: %v", err)
 		}
 		slog.Info("Stopped serving new connections")
 	}()
+
+	slog.Debug("...HTTP server created")
 
 	return &Server{ server} 
 }
@@ -50,12 +55,14 @@ func (server *Server) Shutdown() {
 
 func handlerWrapper(h http.Handler, core *core.CoreServices) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		// Ensure the request has an id
 		id := req.Header.Get(requestIdHeader)
 		if id == "" {
 			id = uuid.New().String()
 			req.Header.Set(requestIdHeader, id)
 		}
 
+		// Add core services, id, and logger to context
 		ctx := req.Context()
 		ctx = context.WithValue(ctx, coreServicesKey{}, core)
 		ctx = context.WithValue(ctx, requestIdKey{}, id)
@@ -63,7 +70,10 @@ func handlerWrapper(h http.Handler, core *core.CoreServices) http.Handler {
 			slog.String("request-id", id),
 		))
 
+		// Add id to response
 		w.Header().Set(requestIdHeader, id)
+
+		// Serve the request
 		h.ServeHTTP(w, req.WithContext(ctx))
 	})
 }

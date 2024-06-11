@@ -10,7 +10,7 @@ type CoreServices struct {
 	HealthService *healthService.HealthService
 }
 
-func Init() *CoreServices {
+func CreateCore() *CoreServices {
 	slog.Debug("Starting core services...")
 
 	healthService := &healthService.HealthService{}
