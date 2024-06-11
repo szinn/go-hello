@@ -25,7 +25,7 @@ func main() {
     signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
     <-sigChan
 
-	httpServer.ShutdownServer(server)
+	server.ShutdownServer()
 
     slog.Info("Graceful shutdown complete.")
 }

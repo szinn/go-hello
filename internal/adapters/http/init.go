@@ -12,18 +12,22 @@ import (
 	"github.com/google/uuid"
 )
 
+type Server struct {
+	server *http.Server
+}
+
 const requestIdHeader = "x-request-id"
 
 type requestIdKey struct{}
 type loggerKey struct{}
 
-func CreateServer(port int) *http.Server {
+func CreateServer(port int) *Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/-/ready", healthCheck)
 
 	server := &http.Server{
 		Addr:    ":" + strconv.Itoa(port),
-		Handler: HandlerWrapper(mux),
+		Handler: handlerWrapper(mux),
 	}
 	go func() {
 		if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
@@ -32,17 +36,17 @@ func CreateServer(port int) *http.Server {
 		slog.Info("Stopped serving new connections")
 	}()
 
-	return server
+	return &Server{ server} 
 }
 
-func ShutdownServer(server *http.Server) {
+func (server *Server) ShutdownServer() {
 	shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownRelease()
 
-	_ = server.Shutdown(shutdownCtx)
+	_ = server.server.Shutdown(shutdownCtx)
 }
 
-func HandlerWrapper(h http.Handler) http.Handler {
+func handlerWrapper(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		id := req.Header.Get(requestIdHeader)
 		if id == "" {
