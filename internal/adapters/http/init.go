@@ -44,6 +44,7 @@ func HandlerWrapper(h http.Handler) http.Handler {
 			slog.String("request-id", id),
 		))
 
+		w.Header().Set(requestIdHeader, id)
 		h.ServeHTTP(w, req.WithContext(ctx))
 	})
 }
