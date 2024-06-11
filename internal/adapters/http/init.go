@@ -23,7 +23,7 @@ type loggerKey struct{}
 
 func CreateServer(port int) *Server {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/-/ready", healthCheck)
+	addHandlers(mux)
 
 	server := &http.Server{
 		Addr:    ":" + strconv.Itoa(port),
@@ -64,10 +64,10 @@ func handlerWrapper(h http.Handler) http.Handler {
 	})
 }
 
-func GetRequestId(r *http.Request) string {
-	return r.Context().Value(requestIdKey{}).(string)
-}
+// func getRequestId(r *http.Request) string {
+// 	return r.Context().Value(requestIdKey{}).(string)
+// }
 
-func GetLogger(r *http.Request) *slog.Logger {
+func getLogger(r *http.Request) *slog.Logger {
 	return r.Context().Value(loggerKey{}).(*slog.Logger)
 }
