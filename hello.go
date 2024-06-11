@@ -1,6 +1,7 @@
 package main
 
 import (
+	httpServer "github.com/szinn/go-hello/internal/adapters/http"
 	"github.com/szinn/go-hello/internal/core"
 	"github.com/szinn/go-hello/internal/logging"
 	"log/slog"
@@ -13,4 +14,7 @@ func main() {
 	slog.Info(quote.Opt())
 
 	core.Init()
+
+	serverCtx := httpServer.CreateServer(8080)
+	<-serverCtx.Done()
 }
