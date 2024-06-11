@@ -2,9 +2,12 @@ package http
 
 import (
 	"context"
+	"errors"
+	"log"
 	"log/slog"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -14,21 +17,29 @@ const requestIdHeader = "x-request-id"
 type requestIdKey struct{}
 type loggerKey struct{}
 
-func CreateServer(port int) context.Context {
+func CreateServer(port int) *http.Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/-/ready", healthCheck)
 
-	ctx, cancelCtx := context.WithCancel(context.Background())
 	server := &http.Server{
 		Addr:    ":" + strconv.Itoa(port),
 		Handler: HandlerWrapper(mux),
 	}
 	go func() {
-		server.ListenAndServe()
-		cancelCtx()
+		if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("HTTP server error: %v", err)
+		}
+		slog.Info("Stopped serving new connections")
 	}()
 
-	return ctx
+	return server
+}
+
+func ShutdownServer(server *http.Server) {
+	shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownRelease()
+
+	server.Shutdown(shutdownCtx)
 }
 
 func HandlerWrapper(h http.Handler) http.Handler {

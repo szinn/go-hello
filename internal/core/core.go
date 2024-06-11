@@ -5,9 +5,5 @@ import (
 )
 
 func Init() {
-	logger := slog.Default().With(
-		slog.String("tag", "value"),
-	)
-
-	logger.Debug("Core initialized")
+	slog.Debug("Core initialized")
 }
