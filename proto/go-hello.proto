@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "github.com/szinn/go-hello/proto";
+
+package proto;
+
+service GoHello {
+  rpc IsHealthy (IsHealthyRequest) returns (IsHealthyResponse) {}
+}
+
+message IsHealthyRequest {
+}
+
+message IsHealthyResponse {
+  bool healthy = 1;
+}

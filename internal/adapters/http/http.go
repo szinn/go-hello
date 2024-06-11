@@ -34,16 +34,16 @@ func CreateServer(port string, core *core.CoreServices) *Server {
 	}
 
 	go func() {
-		slog.Info(fmt.Sprintf("Listening on :%s", port))
+		slog.Info(fmt.Sprintf("Listening for HTTP on :%s", port))
 		if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("HTTP server error: %v", err)
 		}
-		slog.Info("Stopped serving new connections")
+		slog.Info("Stopped serving new HTTP connections")
 	}()
 
 	slog.Debug("...HTTP server created")
 
-	return &Server{ server} 
+	return &Server{server} 
 }
 
 func (server *Server) Shutdown() {

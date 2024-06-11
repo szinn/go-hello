@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	httpAdapter "github.com/szinn/go-hello/internal/adapters/http"
+	grpcAdapter "github.com/szinn/go-hello/internal/adapters/grpc"
 	"github.com/szinn/go-hello/internal/core"
 	"github.com/szinn/go-hello/internal/logging"
 )
@@ -22,7 +23,10 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	server := httpAdapter.CreateServer(port, core)
+	httpServer := httpAdapter.CreateServer(port, core)
+
+	// Initialize the GRPC server
+	grpcServer := grpcAdapter.CreateServer("6952", core)
 
 	// Connect into the OS and wait for termination
 	sigChan := make(chan os.Signal, 1)
@@ -30,7 +34,8 @@ func main() {
 	<-sigChan
 
 	// Shutdown the server gracefully
-	server.Shutdown()
+	httpServer.Shutdown()
+	grpcServer.Shutdown()
 
 	// Shutdown the core
 	core.Shutdown()

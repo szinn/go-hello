@@ -14,15 +14,15 @@ ENV GO111MODULE=on \
 
 COPY . ./
 RUN go mod download
-RUN go build -ldflags="-s -w" -o /go-hello
+RUN go build -ldflags="-s -w" -o /server cmd/server/server.go
 
 # Final Image
 FROM gcr.io/distroless/static:nonroot
 USER nonroot:nonroot
-COPY --from=build --chown=nonroot:nonroot /go-hello /app/
+COPY --from=build --chown=nonroot:nonroot /server /app/
 EXPOSE 8080
 
-CMD ["/app/go-hello"]
+CMD ["/app/server"]
 LABEL \
     org.opencontainers.image.title="go-hello" \
     org.opencontainers.image.source="https://github.com/szinn/go-hello"
