@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/szinn/go-hello/internal/core"
 	"github.com/google/uuid"
 )
 
@@ -20,14 +21,15 @@ const requestIdHeader = "x-request-id"
 
 type requestIdKey struct{}
 type loggerKey struct{}
+type coreServicesKey struct{}
 
-func CreateServer(port int) *Server {
+func CreateServer(port int, core *core.CoreServices) *Server {
 	mux := http.NewServeMux()
 	addHandlers(mux)
 
 	server := &http.Server{
 		Addr:    ":" + strconv.Itoa(port),
-		Handler: handlerWrapper(mux),
+		Handler: handlerWrapper(mux, core),
 	}
 	go func() {
 		if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
@@ -39,14 +41,14 @@ func CreateServer(port int) *Server {
 	return &Server{ server} 
 }
 
-func (server *Server) ShutdownServer() {
+func (server *Server) Shutdown() {
 	shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownRelease()
 
 	_ = server.server.Shutdown(shutdownCtx)
 }
 
-func handlerWrapper(h http.Handler) http.Handler {
+func handlerWrapper(h http.Handler, core *core.CoreServices) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		id := req.Header.Get(requestIdHeader)
 		if id == "" {
@@ -54,7 +56,9 @@ func handlerWrapper(h http.Handler) http.Handler {
 			req.Header.Set(requestIdHeader, id)
 		}
 
-		ctx := context.WithValue(req.Context(), requestIdKey{}, id)
+		ctx := req.Context()
+		ctx = context.WithValue(ctx, coreServicesKey{}, core)
+		ctx = context.WithValue(ctx, requestIdKey{}, id)
 		ctx = context.WithValue(ctx, loggerKey{}, slog.With(
 			slog.String("request-id", id),
 		))
@@ -70,4 +74,8 @@ func handlerWrapper(h http.Handler) http.Handler {
 
 func getLogger(r *http.Request) *slog.Logger {
 	return r.Context().Value(loggerKey{}).(*slog.Logger)
+}
+
+func getCoreServices(r *http.Request) *core.CoreServices {
+	return r.Context().Value(coreServicesKey{}).(*core.CoreServices)
 }

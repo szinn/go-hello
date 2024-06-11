@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	httpServer "github.com/szinn/go-hello/internal/adapters/http"
+	httpAdapter "github.com/szinn/go-hello/internal/adapters/http"
 	"github.com/szinn/go-hello/internal/core"
 	"github.com/szinn/go-hello/internal/logging"
 )
@@ -15,17 +15,24 @@ import (
 func main() {
 	logging.Init()
 
-	core.Init()
+	// Initialize the core application
+	core := core.Init()
 
+	// Initialize the HTTP server
 	port := 8080
-	server := httpServer.CreateServer(port)
+	server := httpAdapter.CreateServer(port, core)
 	slog.Info(fmt.Sprintf("Listening on :%d", port))
 
+	// Connect into the OS and wait for termination
 	sigChan := make(chan os.Signal, 1)
     signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
     <-sigChan
 
-	server.ShutdownServer()
+	// Shutdown the server gracefully
+	server.Shutdown()
+
+	// Shutdown the core
+	core.Shutdown()
 
     slog.Info("Graceful shutdown complete.")
 }
