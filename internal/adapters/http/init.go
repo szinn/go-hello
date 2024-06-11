@@ -39,7 +39,7 @@ func ShutdownServer(server *http.Server) {
 	shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownRelease()
 
-	server.Shutdown(shutdownCtx)
+	_ = server.Shutdown(shutdownCtx)
 }
 
 func HandlerWrapper(h http.Handler) http.Handler {
