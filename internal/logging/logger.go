@@ -1,10 +1,13 @@
 package logging
 
 import (
+	"context"
 	"log/slog"
 	"os"
 	"strings"
 )
+
+type loggerKey struct{}
 
 func Init() {
 	level := getLevel()
@@ -47,4 +50,12 @@ func getHandler(level slog.Level) slog.Handler {
 	}
 
 	return handler
+}
+
+func SetLogger(ctx context.Context, logger *slog.Logger) context.Context {
+	return context.WithValue(ctx, loggerKey{}, logger)
+}
+
+func GetLogger(ctx context.Context) *slog.Logger {
+	return ctx.Value(loggerKey{}).(*slog.Logger)
 }

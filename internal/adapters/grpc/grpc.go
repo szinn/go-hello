@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/szinn/go-hello/internal/core"
+	"github.com/szinn/go-hello/internal/logging"
 	pb "github.com/szinn/go-hello/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -30,8 +31,6 @@ var (
 )
 
 type requestIdKey struct{}
-type loggerKey struct{}
-type coreServicesKey struct{}
 
 func CreateServer(port string, core *core.CoreServices) *Server {
 	slog.Debug("Creating GRPC server...")
@@ -76,19 +75,11 @@ func interceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handl
 		id = ids[0]
 	}
 
-	ctx = context.WithValue(ctx, coreServicesKey{}, info.Server.(*server).core)
 	ctx = context.WithValue(ctx, requestIdKey{}, id)
-	ctx = context.WithValue(ctx, loggerKey{}, slog.With(
+	ctx = core.SetCoreServices(ctx, info.Server.(*server).core)
+	ctx = logging.SetLogger(ctx, slog.With(
 		slog.String("request-id", id),
 	))
 
 	return handler(ctx, req)
-}
-
-func getLogger(ctx context.Context) *slog.Logger {
-	return ctx.Value(loggerKey{}).(*slog.Logger)
-}
-
-func getCoreServices(ctx context.Context) *core.CoreServices {
-	return ctx.Value(coreServicesKey{}).(*core.CoreServices)
 }

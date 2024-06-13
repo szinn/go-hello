@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"log/slog"
 
 	healthService "github.com/szinn/go-hello/internal/core/health"
@@ -9,6 +10,8 @@ import (
 type CoreServices struct {
 	HealthService *healthService.HealthService
 }
+
+type coreServicesKey struct{}
 
 func CreateCore() *CoreServices {
 	slog.Debug("Starting core services...")
@@ -24,4 +27,12 @@ func CreateCore() *CoreServices {
 
 func (core *CoreServices) Shutdown() {
 	slog.Debug("Core shutdown")
+}
+
+func SetCoreServices(ctx context.Context, core *CoreServices) context.Context {
+	return context.WithValue(ctx, coreServicesKey{}, core)
+}
+
+func GetCoreServices(ctx context.Context) *CoreServices {
+	return ctx.Value(coreServicesKey{}).(*CoreServices)
 }

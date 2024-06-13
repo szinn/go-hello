@@ -9,8 +9,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/szinn/go-hello/internal/core"
 	"github.com/google/uuid"
+	"github.com/szinn/go-hello/internal/core"
+	"github.com/szinn/go-hello/internal/logging"
 )
 
 type Server struct {
@@ -20,8 +21,6 @@ type Server struct {
 const requestIdHeader = "x-request-id"
 
 type requestIdKey struct{}
-type loggerKey struct{}
-type coreServicesKey struct{}
 
 func CreateServer(port string, core *core.CoreServices) *Server {
 	slog.Debug("Creating HTTP server...")
@@ -43,7 +42,7 @@ func CreateServer(port string, core *core.CoreServices) *Server {
 
 	slog.Debug("...HTTP server created")
 
-	return &Server{server} 
+	return &Server{server}
 }
 
 func (server *Server) Shutdown() {
@@ -53,7 +52,7 @@ func (server *Server) Shutdown() {
 	_ = server.server.Shutdown(shutdownCtx)
 }
 
-func handlerWrapper(h http.Handler, core *core.CoreServices) http.Handler {
+func handlerWrapper(h http.Handler, coreServices *core.CoreServices) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		// Ensure the request has an id
 		id := req.Header.Get(requestIdHeader)
@@ -64,9 +63,9 @@ func handlerWrapper(h http.Handler, core *core.CoreServices) http.Handler {
 
 		// Add core services, id, and logger to context
 		ctx := req.Context()
-		ctx = context.WithValue(ctx, coreServicesKey{}, core)
 		ctx = context.WithValue(ctx, requestIdKey{}, id)
-		ctx = context.WithValue(ctx, loggerKey{}, slog.With(
+		ctx = core.SetCoreServices(ctx, coreServices)
+		ctx = logging.SetLogger(ctx, slog.With(
 			slog.String("request-id", id),
 		))
 
@@ -81,11 +80,3 @@ func handlerWrapper(h http.Handler, core *core.CoreServices) http.Handler {
 // func getRequestId(r *http.Request) string {
 // 	return r.Context().Value(requestIdKey{}).(string)
 // }
-
-func getLogger(r *http.Request) *slog.Logger {
-	return r.Context().Value(loggerKey{}).(*slog.Logger)
-}
-
-func getCoreServices(r *http.Request) *core.CoreServices {
-	return r.Context().Value(coreServicesKey{}).(*core.CoreServices)
-}
