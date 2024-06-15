@@ -15,6 +15,9 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             cobra-cli
+            protobuf
+            protoc-gen-go
+            protoc-gen-go-grpc
           ];
         };
       }
