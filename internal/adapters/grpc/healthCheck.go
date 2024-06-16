@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+
 	"github.com/szinn/go-hello/internal/core"
 	"github.com/szinn/go-hello/internal/logging"
 

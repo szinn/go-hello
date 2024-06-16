@@ -26,9 +26,7 @@ type server struct {
 	core *core.CoreServices
 }
 
-var (
-	errMissingMetadata = status.Errorf(codes.InvalidArgument, "missing metadata")
-)
+var errMissingMetadata = status.Errorf(codes.InvalidArgument, "missing metadata")
 
 type requestIdKey struct{}
 
@@ -49,7 +47,6 @@ func CreateServer(port string, core *core.CoreServices) *Server {
 			log.Fatalf("GRPC server error: %v", err)
 		}
 		slog.Info("Stopped serving new GRPC connections")
-
 	}()
 
 	slog.Debug("...GRPC server created")

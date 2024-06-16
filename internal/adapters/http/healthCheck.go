@@ -2,12 +2,13 @@ package http
 
 import (
 	"net/http"
+
 	"github.com/szinn/go-hello/internal/core"
 	"github.com/szinn/go-hello/internal/logging"
 )
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	var ctx = r.Context()
+	ctx := r.Context()
 
 	coreServices := core.GetCoreServices(ctx)
 	logger := logging.GetLogger(ctx)

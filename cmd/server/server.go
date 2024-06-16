@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	httpAdapter "github.com/szinn/go-hello/internal/adapters/http"
 	grpcAdapter "github.com/szinn/go-hello/internal/adapters/grpc"
+	httpAdapter "github.com/szinn/go-hello/internal/adapters/http"
 	"github.com/szinn/go-hello/internal/core"
 	"github.com/szinn/go-hello/internal/logging"
 )
