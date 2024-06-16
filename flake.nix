@@ -1,25 +1,31 @@
 {
-  description = "Additional configuration";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
+  description = "GoLang HTTP/GRPC Playground";
 
-  outputs = {
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-root.url = "github:srid/flake-root";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = inputs @ {
+    flake-parts,
     nixpkgs,
-    flake-utils,
     ...
   }:
-    flake-utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in {
-        devShells.default = pkgs.mkShell {
-          packages = with pkgs; [
-            cobra-cli
-            protobuf
-            protoc-gen-go
-            protoc-gen-go-grpc
-          ];
-        };
-      }
-    );
+    flake-parts.lib.mkFlake {
+      inherit inputs;
+    } {
+      imports = [
+        ./nix
+      ];
+
+      systems = [
+        "aarch64-darwin"
+        "x86_64-linux"
+      ];
+    };
 }

@@ -2,10 +2,20 @@
 version: "3"
 
 tasks:
-  default:
-    silent: true
-    cmd: task -l
+    default:
+        silent: true
+        cmd: task -l
 
-  gen-proto:
-    desc: "Generate proto source"
-    cmd: protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/go-hello.proto
+    gen-proto:
+        desc: "Generate proto source"
+        cmds:
+            - protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/go-hello.proto
+            - nix fmt proto/
+
+    fmt:
+        desc: "Format source files"
+        cmd: nix fmt
+
+    lint:
+        desc: "Lint source files"
+        cmd: golangci-lint run

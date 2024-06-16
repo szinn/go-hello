@@ -7,10 +7,11 @@
 package proto
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -136,11 +137,13 @@ func file_proto_go_hello_proto_rawDescGZIP() []byte {
 	return file_proto_go_hello_proto_rawDescData
 }
 
-var file_proto_go_hello_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_proto_go_hello_proto_goTypes = []interface{}{
-	(*IsHealthyRequest)(nil),  // 0: proto.IsHealthyRequest
-	(*IsHealthyResponse)(nil), // 1: proto.IsHealthyResponse
-}
+var (
+	file_proto_go_hello_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+	file_proto_go_hello_proto_goTypes  = []interface{}{
+		(*IsHealthyRequest)(nil),  // 0: proto.IsHealthyRequest
+		(*IsHealthyResponse)(nil), // 1: proto.IsHealthyResponse
+	}
+)
 var file_proto_go_hello_proto_depIdxs = []int32{
 	0, // 0: proto.GoHello.IsHealthy:input_type -> proto.IsHealthyRequest
 	1, // 1: proto.GoHello.IsHealthy:output_type -> proto.IsHealthyResponse
