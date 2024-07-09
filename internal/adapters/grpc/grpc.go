@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 )
 
@@ -35,6 +36,7 @@ func CreateServer(port string, core *core.CoreServices) *Server {
 
 	s := grpc.NewServer(grpc.UnaryInterceptor(interceptor))
 	pb.RegisterGoHelloServer(s, &server{core: core})
+	reflection.Register(s)
 
 	go func() {
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%s", port))

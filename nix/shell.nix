@@ -12,6 +12,7 @@
       packages = with pkgs; [
         go
         golangci-lint
+        grpcui
         protobuf
         protoc-gen-go
         protoc-gen-go-grpc
