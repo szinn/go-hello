@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	grpcAdapter "github.com/szinn/go-hello/internal/adapters/grpc"
 	httpAdapter "github.com/szinn/go-hello/internal/adapters/http"
@@ -39,6 +40,7 @@ func main() {
 
 	// Shutdown the core
 	core.Shutdown()
+	time.Sleep(5 * time.Second)
 
 	slog.Info("Graceful shutdown complete.")
 }
