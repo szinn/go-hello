@@ -12,7 +12,7 @@ import (
 func (server *server) IsHealthy(ctx context.Context, request *pb.IsHealthyRequest) (*pb.IsHealthyResponse, error) {
 	coreServices := core.GetCoreServices(ctx)
 	logger := logging.GetLogger(ctx)
-	logger.Debug("grpc IsHealthy")
+	logger.Debug("grpc IsHealthy called")
 
 	return &pb.IsHealthyResponse{Healthy: coreServices.HealthService.IsHealthy(ctx)}, nil
 }

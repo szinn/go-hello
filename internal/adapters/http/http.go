@@ -18,7 +18,7 @@ type Server struct {
 	server *http.Server
 }
 
-const requestIdHeader = "x-request-id"
+const requestIdHeader = "X-Request-ID"
 
 type requestIdKey struct{}
 

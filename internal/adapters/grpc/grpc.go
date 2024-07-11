@@ -29,6 +29,8 @@ type server struct {
 
 var errMissingMetadata = status.Errorf(codes.InvalidArgument, "missing metadata")
 
+const requestIdHeader = "X-Request-ID"
+
 type requestIdKey struct{}
 
 func CreateServer(port string, core *core.CoreServices) *Server {
@@ -67,7 +69,7 @@ func interceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, handl
 	}
 
 	var id string
-	ids := md["x-request-id"]
+	ids := md[requestIdHeader]
 	if len(ids) == 0 {
 		id = uuid.New().String()
 	} else {
