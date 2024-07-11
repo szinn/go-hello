@@ -40,7 +40,7 @@ func main() {
 
 	// Shutdown the core
 	core.Shutdown()
-	time.Sleep(5 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	slog.Info("Graceful shutdown complete.")
 }
