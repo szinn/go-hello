@@ -1,5 +1,5 @@
 # Build Project
-FROM golang:1.23.3-alpine as build
+FROM golang:1.23.4-alpine as build
 WORKDIR /go/src/github.com/szinn/go-hello
 
 ARG TARGETOS
