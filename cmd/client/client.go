@@ -12,8 +12,6 @@ import (
 )
 
 func main() {
-	log.Println("Starting NewClient")
-
 	addr := flag.String("addr", "localhost:6952", "The address of the server to connect to")
 
 	flag.Parse()
