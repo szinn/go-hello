@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -16,8 +15,6 @@ import (
 
 func main() {
 	logging.Init()
-
-	log.Println("Starting server")
 
 	// Initialize the core application
 	core := core.CreateCore()
