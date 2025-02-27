@@ -27,6 +27,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
+	log.Println("Querying server...")
 	r, err := c.IsHealthy(ctx, &pb.IsHealthyRequest{})
 	if err != nil {
 		log.Fatalf("Could not check if healthy: %v", err)
