@@ -2,7 +2,7 @@ module github.com/szinn/go-hello
 
 go 1.22.7
 
-toolchain go1.23.4
+toolchain go1.26.1
 
 require (
 	github.com/google/uuid v1.6.0
